@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-HK Express 其他固定费用计算器（不含机票票价）
-路线: HKG <-> 台北(TPE) / HKG <-> 东京(NRT)
-- 自动尝试从官网抓取最新燃油附加费；抓取/解析失败则回退到内置的最新费率表。
-- 燃油附加费按"每位成人、每一航段"计算 (官网规则)。
-- 默认按"来回一起买"口径: 两段燃油费均以 HKD 339 计, 日本回程含日本端固定税费。
-- 生成 docs/index.md (供 GitHub Pages) + hkexpress_fees.json。
+HK Express 其他固定費用計算器（不含機票票價）
+路線: HKG <-> 台北(TPE) / HKG <-> 東京(NRT)
+- 自動嘗試從官網抓取最新燃油附加費；抓取/解析失敗則回退到內置的最新費率表。
+- 燃油附加費按「每位成人、每一航段」計算（官網規則）。
+- 預設按「來回一起買」口徑：兩段燃油費均以 HKD 339 計，日本回程含日本端固定費用。
+- 產生 docs/index.md（供 GitHub Pages）+ hkexpress_fees.json。
 
 用法:
-    python hkexpress_fees.py            # 计算并写入产物
-    python hkexpress_fees.py --check    # 仅计算并打印, 退出码 0=无变化 1=内容有变化(供 CI 判断)
+    python hkexpress_fees.py            # 計算並寫入產物
+    python hkexpress_fees.py --check    # 僅計算並列印，退出碼 0=無變化 1=內容有變化（供 CI 判斷）
 """
 import argparse
 import difflib
@@ -34,13 +34,13 @@ BUILTIN_FUEL = {
 FX = {"TWD": 0.26, "JPY": 0.052}  # 参考汇率(HKD 本位), 仅显示用
 
 HK_DEPART_TAXES = OrderedDict([
-    ("香港 - 飞机乘客离境税", ("HKD", 200)),
-    ("香港 - 机场建设费", ("HKD", 90)),
-    ("香港 - 旅客保安费", ("HKD", 65)),
+    ("香港 - 飛機乘客離境稅", ("HKD", 200)),
+    ("香港 - 機場建設費", ("HKD", 90)),
+    ("香港 - 旅客保安費", ("HKD", 65)),
 ])
 JP_RETURN_TAXES = OrderedDict([
-    ("日本 - 国际观光旅客税", ("HKD", 149)),
-    ("日本 - 乘客服务设施费", ("HKD", 147)),
+    ("日本 - 國際觀光旅客稅", ("HKD", 149)),
+    ("日本 - 乘客服務設施費", ("HKD", 147)),
 ])
 
 
@@ -104,10 +104,10 @@ def calc_route(origin, dest, fuel_table, together=False):
         for name, (cur, amt) in HK_DEPART_TAXES.items():
             items.append((name, cur, amt, amt)); hkd_total += amt
     elif origin == "TPE":
-        items.append(("中国台湾 - 机场服务费", "TWD", 125, hkd_amount("TWD", 125)))
+        items.append(("中國台灣 - 機場服務費", "TWD", 125, hkd_amount("TWD", 125)))
         hkd_total += hkd_amount("TWD", 125)
     fcur, famt = get_fuel(origin, dest, fuel_table, force_hkd=together)
-    items.append((f"燃油附加费 ({origin}->{dest})", fcur, famt, hkd_amount(fcur, famt)))
+    items.append((f"燃油附加費 ({origin}->{dest})", fcur, famt, hkd_amount(fcur, famt)))
     hkd_total += hkd_amount(fcur, famt)
     if origin == "NRT" and together:
         for name, (cur, amt) in JP_RETURN_TAXES.items():
@@ -117,10 +117,10 @@ def calc_route(origin, dest, fuel_table, together=False):
 
 def build_payload(fuel_table, web_ok, together):
     routes_spec = [
-        ("HKG", "台湾", "HKG -> 台北 (TPE) 去程"),
+        ("HKG", "台灣", "HKG -> 台北 (TPE) 去程"),
         ("TPE", "香港", "台北 (TPE) -> HKG 回程"),
-        ("HKG", "日本", "HKG -> 东京 (NRT) 去程"),
-        ("NRT", "香港", "东京 (NRT) -> HKG 回程"),
+        ("HKG", "日本", "HKG -> 東京 (NRT) 去程"),
+        ("NRT", "香港", "東京 (NRT) -> HKG 回程"),
     ]
     payload = {"generated_at": datetime.date.today().isoformat(),
                "fuel_table": fuel_table, "web_source_used": web_ok,
@@ -137,64 +137,64 @@ def build_payload(fuel_table, web_ok, together):
 
 def render_page(payload):
     """渲染 GitHub Pages 用的 Markdown 页面。"""
-    src = "官网实时抓取" if payload["web_source_used"] else "内置最新费率表（官网抓取不可用，已回退）"
+    src = "官網即時抓取" if payload["web_source_used"] else "內置最新費率表（官網抓取不可用，已回退）"
     lines = []
     lines.append("---")
-    lines.append('title: "HK Express 固定费用速查"')
+    lines.append('title: "HK Express 固定費用速查"')
     lines.append(f'generated_at: "{payload["generated_at"]}"')
     lines.append("---")
     lines.append("")
-    lines.append("# HK Express 其他固定费用速查（不含机票票价）")
+    lines.append("# HK Express 其他固定費用速查（不含機票票價）")
     lines.append("")
-    lines.append(f"- 计算日：**{payload['generated_at']}**")
-    lines.append(f"- 燃油附加费来源：{src}")
-    lines.append("- 计价模式：来回一起买（燃油费统一以 HKD 计，日本回程含日本端固定税费）")
-    lines.append(f"- 路线：HKG ↔ 台北(TPE) / HKG ↔ 东京(NRT)（1 位成人／往返／不含票价）")
+    lines.append(f"- 計算日：**{payload['generated_at']}**")
+    lines.append(f"- 燃油附加費來源：{src}")
+    lines.append("- 計價模式：來回一起買（燃油費統一以 HKD 計，日本回程含日本端固定費用）")
+    lines.append(f"- 路線：HKG ↔ 台北(TPE) / HKG ↔ 東京(NRT)（1 位成人／往返／不含票價）")
     lines.append("")
-    lines.append("> 数据仅供参考，以 HK Express 结账页面实际列示为准。")
+    lines.append("> 資料僅供參考，以 HK Express 結賬頁面實際列示為準。")
     lines.append("")
-    lines.append("## 各航段固定费用明细")
+    lines.append("## 各航段固定費用明細")
     lines.append("")
     for r in payload["routes"]:
         lines.append(f"### {r['label']}  ")
         lines.append("")
-        lines.append("| 费用项目 | 币种 | 金额 | HKD 参考 |")
+        lines.append("| 費用項目 | 幣種 | 金額 | HKD 參考 |")
         lines.append("|---|---|---:|---:|")
         for it in r["items"]:
             ref = "" if it["currency"] == "HKD" else f"{it['hkd']:,}"
             lines.append(f"| {it['name']} | {it['currency']} | {it['amount']:,} | {ref} |")
-        lines.append(f"| **单程小计** | **HKD** | **{r['subtotal_hkd']:,}** | |")
+        lines.append(f"| **單程小計** | **HKD** | **{r['subtotal_hkd']:,}** | |")
         lines.append("")
-    lines.append("## 往返合计固定费用（不含任何票价）")
+    lines.append("## 往返合計固定費用（不含任何票價）")
     lines.append("")
     lines.append(f"**HKD {payload['round_trip_total_hkd']:,}**")
     lines.append("")
-    lines.append("## 说明")
+    lines.append("## 說明")
     lines.append("")
-    lines.append("- 燃油附加费按官网规则“每位旅客每航段”计；2 岁以下不占座幼童免燃油费。")
-    lines.append("- 香港出发固定税费：离境税 200 + 机场建设费 90 + 旅客保安费 65 = 355 HKD。")
-    lines.append("- 日本回程固定税费：国际观光旅客税 149 + 乘客服务设施费 147 = 296 HKD。")
-    lines.append("- 参考汇率 TWD≈0.26 / JPY≈0.052 HKD（仅显示用，非结算依据）。")
-    lines.append("- 本页由 GitHub Actions 每日自动更新（如燃油附加费有变动）。")
+    lines.append("- 燃油附加費按官網規則「每位旅客每航段」計；2 歲以下不佔座幼童免燃油費。")
+    lines.append("- 香港出發固定費用：離境稅 200 + 機場建設費 90 + 旅客保安費 65 = 355 HKD。")
+    lines.append("- 日本回程固定費用：國際觀光旅客稅 149 + 乘客服務設施費 147 = 296 HKD。")
+    lines.append("- 參考匯率 TWD≈0.26／JPY≈0.052 HKD（僅顯示用，非結算依據）。")
+    lines.append("- 本頁由 GitHub Actions 每日自動更新（如燃油附加費有變動）。")
     return "\n".join(lines) + "\n"
 
 
 def render_text_report(payload):
     """人类可读的 stdout 报告（保留原有格式）。"""
-    src = "官网实时抓取" if payload["web_source_used"] else "内置最新费率表(官网抓取不可用, 已回退)"
+    src = "官網即時抓取" if payload["web_source_used"] else "內置最新費率表(官網抓取不可用, 已回退)"
     out = []
-    out.append(f"# HK Express 固定费用明细 (不含票价)  |  计算日: {payload['generated_at']}")
-    out.append(f"# 燃油附加费来源: {src}\n")
+    out.append(f"# HK Express 固定費用明細 (不含票價)  |  計算日: {payload['generated_at']}")
+    out.append(f"# 燃油附加費來源: {src}\n")
     for r in payload["routes"]:
-        out.append(f"## {r['label']}  (单程 / 1 位成人 / 1 航段)")
+        out.append(f"## {r['label']}  (單程 / 1 位成人 / 1 航段)")
         for it in r["items"]:
             line = f"    - {it['name']}: {it['currency']} {it['amount']:,}"
             if it["currency"] != "HKD":
-                line += f"  (约 HKD {it['hkd']:,})"
+                line += f"  (約 HKD {it['hkd']:,})"
             out.append(line)
-        out.append(f"  -> 单程固定费用小计: HKD {r['subtotal_hkd']:,}\n")
+        out.append(f"  -> 單程固定費用小計: HKD {r['subtotal_hkd']:,}\n")
     out.append("=" * 44)
-    out.append(f"往返合计固定费用 (去程+回程, 不含任何票价): HKD {payload['round_trip_total_hkd']:,}")
+    out.append(f"往返合計固定費用 (去程+回程, 不含任何票價): HKD {payload['round_trip_total_hkd']:,}")
     out.append("=" * 44)
     return "\n".join(out)
 
@@ -224,12 +224,21 @@ def main():
     json_str = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
 
     if args.check:
-        # CI 模式: 不写入, 仅报告是否有变化
-        changed = file_changed(PAGE_PATH, page_md) or file_changed(JSON_PATH, json_str)
+        # CI 模式: 不寫入，僅報告是否有變化
+        page_changed = file_changed(PAGE_PATH, page_md)
+        json_changed = file_changed(JSON_PATH, json_str)
+        changed = page_changed or json_changed
         print(render_text_report(payload))
-        print(f"\n[check] page_changed={file_changed(PAGE_PATH, page_md)} "
-              f"json_changed={file_changed(JSON_PATH, json_str)}")
-        return 1 if changed else 0
+        print(f"\n[check] page_changed={page_changed} json_changed={json_changed}")
+        # 輸出供 GitHub Actions 條件判斷使用
+        if os.environ.get("GITHUB_OUTPUT"):
+            with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as gh:
+                gh.write(f"changed={'true' if changed else 'false'}\n")
+        if changed:
+            print("[check] 偵測到變動，需更新 (exit 0)")
+            return 0
+        print("[check] 無變動，跳過更新 (exit 1)")
+        return 1
 
     os.makedirs(DOCS_DIR, exist_ok=True)
     with open(PAGE_PATH, "w", encoding="utf-8") as f:

@@ -34,28 +34,28 @@
     {
       "label": "HKG -> 台北 (TPE) 去程",
       "origin": "HKG",
-      "dest": "台湾",
+      "dest": "台灣",
       "items": [
         {
-          "name": "香港 - 飞机乘客离境税",
+          "name": "香港 - 飛機乘客離境稅",
           "currency": "HKD",
           "amount": 200,
           "hkd": 200
         },
         {
-          "name": "香港 - 机场建设费",
+          "name": "香港 - 機場建設費",
           "currency": "HKD",
           "amount": 90,
           "hkd": 90
         },
         {
-          "name": "香港 - 旅客保安费",
+          "name": "香港 - 旅客保安費",
           "currency": "HKD",
           "amount": 65,
           "hkd": 65
         },
         {
-          "name": "燃油附加费 (HKG->台湾)",
+          "name": "燃油附加費 (HKG->台灣)",
           "currency": "HKD",
           "amount": 339,
           "hkd": 339
@@ -69,13 +69,13 @@
       "dest": "香港",
       "items": [
         {
-          "name": "中国台湾 - 机场服务费",
+          "name": "中國台灣 - 機場服務費",
           "currency": "TWD",
           "amount": 125,
           "hkd": 32
         },
         {
-          "name": "燃油附加费 (TPE->香港)",
+          "name": "燃油附加費 (TPE->香港)",
           "currency": "HKD",
           "amount": 339,
           "hkd": 339
@@ -84,30 +84,30 @@
       "subtotal_hkd": 371
     },
     {
-      "label": "HKG -> 东京 (NRT) 去程",
+      "label": "HKG -> 東京 (NRT) 去程",
       "origin": "HKG",
       "dest": "日本",
       "items": [
         {
-          "name": "香港 - 飞机乘客离境税",
+          "name": "香港 - 飛機乘客離境稅",
           "currency": "HKD",
           "amount": 200,
           "hkd": 200
         },
         {
-          "name": "香港 - 机场建设费",
+          "name": "香港 - 機場建設費",
           "currency": "HKD",
           "amount": 90,
           "hkd": 90
         },
         {
-          "name": "香港 - 旅客保安费",
+          "name": "香港 - 旅客保安費",
           "currency": "HKD",
           "amount": 65,
           "hkd": 65
         },
         {
-          "name": "燃油附加费 (HKG->日本)",
+          "name": "燃油附加費 (HKG->日本)",
           "currency": "HKD",
           "amount": 339,
           "hkd": 339
@@ -116,24 +116,24 @@
       "subtotal_hkd": 694
     },
     {
-      "label": "东京 (NRT) -> HKG 回程",
+      "label": "東京 (NRT) -> HKG 回程",
       "origin": "NRT",
       "dest": "香港",
       "items": [
         {
-          "name": "燃油附加费 (NRT->香港)",
+          "name": "燃油附加費 (NRT->香港)",
           "currency": "HKD",
           "amount": 339,
           "hkd": 339
         },
         {
-          "name": "日本 - 国际观光旅客税",
+          "name": "日本 - 國際觀光旅客稅",
           "currency": "HKD",
           "amount": 149,
           "hkd": 149
         },
         {
-          "name": "日本 - 乘客服务设施费",
+          "name": "日本 - 乘客服務設施費",
           "currency": "HKD",
           "amount": 147,
           "hkd": 147
