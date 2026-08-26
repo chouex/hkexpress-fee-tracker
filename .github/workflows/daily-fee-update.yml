@@ -1,0 +1,73 @@
+name: Daily HK Express fee update
+
+on:
+  schedule:
+    # 每日 UTC 00:15（香港时间约 08:15）运行一次，避开整点高峰
+    - cron: "15 0 * * *"
+  workflow_dispatch:  # 允许手动触发
+
+permissions:
+  contents: write   # 用于提交变动后的 page/json
+  pages: write      # 用于部署 GitHub Pages
+  id-token: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    # 避免多个定时实例并发
+    concurrency:
+      group: hkexpress-fee-update
+      cancel-in-progress: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run fee calculator (check mode)
+        id: calc
+        run: |
+          python hkexpress_fees.py --check
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Run fee calculator (write artifacts)
+        if: steps.calc.outputs.exit_code == '1'
+        run: python hkexpress_fees.py
+
+      - name: Commit & push changes (if any)
+        if: steps.calc.outputs.exit_code == '1'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: 自动更新 HK Express 费用 page/json（燃油附加费变动）"
+          file_pattern: "docs/index.md hkexpress_fees.json"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
+          commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+
+  deploy-pages:
+    needs: update
+    if: github.ref == 'refs/heads/main'   # 仅在 main 分支部署
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main   # 拉取刚提交的更新
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs   # docs/index.md 作为站点根
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
