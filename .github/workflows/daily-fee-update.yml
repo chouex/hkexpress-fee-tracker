@@ -1,72 +1,65 @@
-name: 每日自動更新 HK Express 費用
+name: 每日更新 HK Express 費用
 
 on:
   schedule:
-    # 每日 UTC 00:15（香港時間約 08:15）執行一次，避開整點高峰
+    # 每日 UTC 00:15（約香港時間 08:15）
     - cron: "15 0 * * *"
-  workflow_dispatch:  # 允許手動觸發
+  workflow_dispatch:
 
 permissions:
-  contents: write   # 用於提交變動後的 page/json
-  pages: write      # 用於部署 GitHub Pages
-  id-token: write
+  contents: write
 
 jobs:
   update:
     runs-on: ubuntu-latest
-    # 避免多個定時實例並發
-    concurrency:
-      group: hkexpress-fee-update
-      cancel-in-progress: true
     steps:
-      - name: 簽出存放庫
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: 設定 Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.11"
 
-      - name: 執行費用計算器（檢查模式）
+      - name: 檢查是否有變動
         id: calc
-        continue-on-error: true   # 無變動時 exit 1 不視為失敗
-        run: python hkexpress_fees.py --check
+        run: |
+          python hkexpress_fees.py --check
+          # --check：有變動 exit 0，無變動 exit 1
+          if [ $? -eq 0 ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
 
-      - name: 執行費用計算器（寫入產物）
+      - name: 產生最新費用頁面與資料
         if: steps.calc.outputs.changed == 'true'
         run: python hkexpress_fees.py
 
-      - name: 提交並推送變更（如有）
+      - name: 提交變動（如有）
         if: steps.calc.outputs.changed == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: 自動更新 HK Express 費用 page/json（燃油附加費變動）"
           file_pattern: "docs/index.md hkexpress_fees.json"
-          commit_user_name: "github-actions[bot]"
-          commit_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
-          commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          commit_user_name: "hkexpress-fee-bot"
+          commit_user_email: "hkexpress-fee-bot@users.noreply.github.com"
 
-  deploy-pages:
+  deploy:
     needs: update
-    if: github.ref == 'refs/heads/main'   # 僅在 main 分支部署
+    if: always()
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: 簽出存放庫
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
         with:
-          ref: main   # 拉取剛提交的更新
-
-      - name: 設定 Pages
-        uses: actions/configure-pages@v5
-
-      - name: 上傳 Pages 成品
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs   # docs/index.md 作為站點根
-
-      - name: 部署至 GitHub Pages
-        id: deployment
+          path: ./docs
+      - id: deployment
         uses: actions/deploy-pages@v4

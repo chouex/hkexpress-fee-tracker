@@ -1,146 +1,94 @@
 {
-  "generated_at": "2026-08-26",
-  "fuel_table": {
-    "HKG": {
-      "台湾": [
-        "HKD",
-        339
-      ],
-      "日本": [
-        "HKD",
-        339
-      ],
-      "非内地": [
-        "HKD",
-        339
-      ]
-    },
-    "TPE": {
-      "香港": [
-        "TWD",
-        1370
-      ]
-    },
-    "NRT": {
-      "香港": [
-        "JPY",
-        14300
-      ]
-    }
+  "updated_at": "2026-08-26",
+  "fuel_surcharge": {
+    "hkd_per_segment": 339,
+    "source": "https://www.hkexpress.com/zh-HK/Fees/Fuel-Surcharge",
+    "web_used": false
   },
-  "web_source_used": false,
-  "together_booking": true,
-  "routes": [
+  "segments": [
     {
-      "label": "HKG -> 台北 (TPE) 去程",
-      "origin": "HKG",
-      "dest": "台灣",
+      "route": "HKG→台北",
+      "destination": "台灣",
       "items": [
         {
-          "name": "香港 - 飛機乘客離境稅",
-          "currency": "HKD",
-          "amount": 200,
-          "hkd": 200
+          "name": "飛機乘客離境稅",
+          "amount_hkd": 200
         },
         {
-          "name": "香港 - 機場建設費",
-          "currency": "HKD",
-          "amount": 90,
-          "hkd": 90
+          "name": "機場建設費",
+          "amount_hkd": 90
         },
         {
-          "name": "香港 - 旅客保安費",
-          "currency": "HKD",
-          "amount": 65,
-          "hkd": 65
+          "name": "旅客保安費",
+          "amount_hkd": 65
         },
         {
-          "name": "燃油附加費 (HKG->台灣)",
-          "currency": "HKD",
-          "amount": 339,
-          "hkd": 339
+          "name": "燃油附加費",
+          "amount_hkd": 339
         }
       ],
       "subtotal_hkd": 694
     },
     {
-      "label": "台北 (TPE) -> HKG 回程",
-      "origin": "TPE",
-      "dest": "香港",
+      "route": "台北→HKG",
+      "destination": "台灣",
       "items": [
         {
-          "name": "中國台灣 - 機場服務費",
-          "currency": "TWD",
-          "amount": 125,
-          "hkd": 32
+          "name": "機場服務費 (TWD 125)",
+          "amount_hkd": 32
         },
         {
-          "name": "燃油附加費 (TPE->香港)",
-          "currency": "HKD",
-          "amount": 339,
-          "hkd": 339
+          "name": "燃油附加費",
+          "amount_hkd": 339
         }
       ],
       "subtotal_hkd": 371
     },
     {
-      "label": "HKG -> 東京 (NRT) 去程",
-      "origin": "HKG",
-      "dest": "日本",
+      "route": "HKG→東京",
+      "destination": "日本",
       "items": [
         {
-          "name": "香港 - 飛機乘客離境稅",
-          "currency": "HKD",
-          "amount": 200,
-          "hkd": 200
+          "name": "飛機乘客離境稅",
+          "amount_hkd": 200
         },
         {
-          "name": "香港 - 機場建設費",
-          "currency": "HKD",
-          "amount": 90,
-          "hkd": 90
+          "name": "機場建設費",
+          "amount_hkd": 90
         },
         {
-          "name": "香港 - 旅客保安費",
-          "currency": "HKD",
-          "amount": 65,
-          "hkd": 65
+          "name": "旅客保安費",
+          "amount_hkd": 65
         },
         {
-          "name": "燃油附加費 (HKG->日本)",
-          "currency": "HKD",
-          "amount": 339,
-          "hkd": 339
+          "name": "燃油附加費",
+          "amount_hkd": 339
         }
       ],
       "subtotal_hkd": 694
     },
     {
-      "label": "東京 (NRT) -> HKG 回程",
-      "origin": "NRT",
-      "dest": "香港",
+      "route": "東京→HKG",
+      "destination": "日本",
       "items": [
         {
-          "name": "燃油附加費 (NRT->香港)",
-          "currency": "HKD",
-          "amount": 339,
-          "hkd": 339
+          "name": "燃油附加費",
+          "amount_hkd": 339
         },
         {
-          "name": "日本 - 國際觀光旅客稅",
-          "currency": "HKD",
-          "amount": 149,
-          "hkd": 149
+          "name": "國際觀光旅客稅",
+          "amount_hkd": 149
         },
         {
-          "name": "日本 - 乘客服務設施費",
-          "currency": "HKD",
-          "amount": 147,
-          "hkd": 147
+          "name": "乘客服務設施費",
+          "amount_hkd": 147
         }
       ],
       "subtotal_hkd": 635
     }
   ],
-  "round_trip_total_hkd": 2394
+  "round_trip_totals": {
+    "台灣": 1065,
+    "日本": 1329
+  }
 }
