@@ -5,7 +5,7 @@ title: HK Express 固定費用計算
 
 # HK Express 固定費用計算（不含票價）
 
-最後更新：**2026-09-03**
+最後更新：**2026-09-04**
 
 > 燃油附加費來源：HK Express 官網（`https://www.hkexpress.com/zh-HK/Fees/Fuel-Surcharge`）
 > 現行標準（2026-08-01 起生效）：香港出發→非內地 HKD 339 / 航段
